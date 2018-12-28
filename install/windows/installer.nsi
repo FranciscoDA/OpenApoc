@@ -187,7 +187,7 @@ Function XcomCDOnBrowse
 	Pop $0
 	
 	${If} $0 == $XBrowseApocalypse
-		nsDialogs::SelectFileDialog open $APOCALYPSE_CD "*.iso|*.cue"
+		nsDialogs::SelectFileDialog open $APOCALYPSE_CD "ISO images (*.iso)|*.iso|CUE images (*.cue)|*.cue|All Files|*.*"
 		Pop $1
 		${If} $1 == error
 			Return
@@ -224,13 +224,16 @@ Section "$(SETUP_GAME)" SecMain
 
 	File "..\..\bin\$%PLATFORM%\$%CONFIGURATION%\*.dll"
 	File "..\..\bin\$%PLATFORM%\$%CONFIGURATION%\*.exe"
-	File /r "..\..\data"
 
 	File "..\..\build-id"
 	File "..\..\OpenApoc-${GAME_VERSION_GIT}\git-commit"
 	File /oname=README.txt "..\..\README.md"
 	File "..\..\README_HOTKEYS.txt"
 	File /oname=LICENSE.txt "..\..\LICENSE"
+
+	SetOutPath "$INSTDIR\data"
+	File /r "..\..\data\"
+	SetOutPath "$INSTDIR"
 	
 	;Generate config
 	${If} $PortableMode == ${BST_CHECKED}
@@ -240,35 +243,23 @@ Section "$(SETUP_GAME)" SecMain
 
 		StrCmp $APOCALYPSE_CD "" skip_portable_cd 0
 		IfFileExists "$APOCALYPSE_CD" 0 skip_portable_cd
-		IfFileExists "$INSTDIR\OpenApoc_settings.conf" skip_existing_config 0
 
-		FileOpen $9 "OpenApoc_settings.conf" w
-		FileWrite $9 "[Framework]$\r$\n"
-		FileWrite $9 "CD = $APOCALYPSE_CD$\r$\n"
-		FileClose $9
+		WriteINIStr "$INSTDIR\OpenApoc_settings.conf" Framework CD "$APOCALYPSE_CD"
 		skip_portable_cd:
 
 	${Else}
 
 		CreateDirectory "$APPDATA\OpenApoc\OpenApoc\saves"
 
-		IfFileExists "$APPDATA\OpenApoc\OpenApoc\settings.conf" skip_existing_config 0
-
-		FileOpen $9 "$APPDATA\OpenApoc\OpenApoc\settings.conf" w
-		
 		StrCmp $APOCALYPSE_CD "" skip_installed_cd 0
 		IfFileExists "$APOCALYPSE_CD" 0 skip_installed_cd
-		
-		FileWrite $9 "[Framework]$\r$\n"
-		FileWrite $9 "CD = $APOCALYPSE_CD$\r$\n"
+
+		WriteINIStr "$APPDATA\OpenApoc\OpenApoc\settings.conf" Framework CD "$APOCALYPSE_CD"
 
 		skip_installed_cd:
-		FileWrite $9 "[Game.Save]$\r$\n"
-		FileWrite $9 "Directory = $APPDATA\OpenApoc\OpenApoc\saves$\r$\n"
-		FileClose $9
+		WriteINIStr "$APPDATA\OpenApoc\OpenApoc\settings.conf" Game.Save Directory "$APPDATA\OpenApoc\OpenApoc\saves"
 
 	${EndIf}
-	skip_existing_config:
 	
 	;Store installation folder
 	WriteRegStr HKLM "Software\${GAME_NAME}" "" $INSTDIR
@@ -432,8 +423,15 @@ FunctionEnd
 ;Uninstaller Sections
 
 Section /o "un.$(SETUP_UNUSER)" UnUser
-	RMDir /r "$APPDATA\OpenApoc\OpenApoc"
+	IfFileExists "$INSTDIR\portable.txt" 0 uninstall_user_nonportable
+	RMDir /r "$INSTDIR\saves"
+	Delete "$INSTDIR\OpenApoc_settings.conf"
+	Goto uninstall_user_success
+	uninstall_user_nonportable:
+	RMDir /r "$APPDATA\OpenApoc\OpenApoc\saves"
+	Delete "$APPDATA\OpenApoc\OpenApoc\settings.conf"
 	RMDir "$APPDATA\OpenApoc"
+	uninstall_user_success:
 SectionEnd
 
 Section "-un.Main"
