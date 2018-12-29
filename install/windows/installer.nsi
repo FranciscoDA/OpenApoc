@@ -28,6 +28,8 @@
 ;--------------------------------
 ;General
 
+	;Get major and minor version numbers from the git tag
+	!searchparse /ignorecase /noerrors ${GAME_VERSION} `v` GAME_VERSION_MAJOR `.` GAME_VERSION_MINOR `-` GAME_VERSION_COMMIT `-`
 	!if GAME_VERSION_MAJOR == ''
 		!define GAME_VERSION_MAJOR 0
 	!endif
@@ -50,9 +52,6 @@
 
 	;Request application privileges for Windows Vista
 	RequestExecutionLevel admin
-
-	;Get major and minor version numbers from the git tag
-	!searchparse /ignorecase /noerrors ${GAME_VERSION} `v` GAME_VERSION_MAJOR `.` GAME_VERSION_MINOR `-` GAME_VERSION_COMMIT `-`
 
 ;--------------------------------
 ;Variables
