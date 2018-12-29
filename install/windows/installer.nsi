@@ -30,13 +30,13 @@
 
 	;Get major and minor version numbers from the git tag
 	!searchparse /ignorecase /noerrors ${GAME_VERSION} `v` GAME_VERSION_MAJOR `.` GAME_VERSION_MINOR `-` GAME_VERSION_COMMIT `-`
-	!if GAME_VERSION_MAJOR == ''
+	!ifndef GAME_VERSION_MAJOR
 		!define GAME_VERSION_MAJOR 0
 	!endif
-	!if GAME_VERSION_MINOR == ''
+	!ifndef GAME_VERSION_MINOR
 		!define GAME_VERSION_MINOR 0
 	!endif
-	!if GAME_VERSION_COMMIT == ''
+	!ifndef GAME_VERSION_COMMIT
 		!define GAME_VERSION_COMMIT 0
 	!endif
 
