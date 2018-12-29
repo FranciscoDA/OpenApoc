@@ -30,7 +30,7 @@
 
 	;Name and file
 	Name "${GAME_NAME} ${GAME_VERSION}"
-	OutFile "install-openapoc-${GAME_VERSION_GIT}.exe"
+	OutFile "install-openapoc-${GAME_VERSION}.exe"
 
 	;Default installation folder
 	InstallDir "$PROGRAMFILES\${GAME_NAME}"
@@ -40,6 +40,19 @@
 
 	;Request application privileges for Windows Vista
 	RequestExecutionLevel admin
+
+	;Get major and minor version numbers from the git tag
+	!searchparse /ignorecase ${GAME_VERSION} `v` GAME_VERSION_MAJOR `.` GAME_VERSION_MINOR `-` GAME_VERSION_COMMIT
+
+	!if GAME_VERSION_MAJOR == ''
+		!define GAME_VERSION_MAJOR 0
+	!endif
+	!if GAME_VERSION_MINOR == ''
+		!define GAME_VERSION_MINOR 0
+	!endif
+	!if GAME_VERSION_COMMIT == ''
+		!define GAME_VERSION_COMMIT 0
+	!endif
 
 ;--------------------------------
 ;Variables
@@ -226,7 +239,7 @@ Section "$(SETUP_GAME)" SecMain
 	File "..\..\bin\$%PLATFORM%\$%CONFIGURATION%\*.exe"
 
 	File "..\..\build-id"
-	File "..\..\OpenApoc-${GAME_VERSION_GIT}\git-commit"
+	File "..\..\OpenApoc-${GAME_VERSION}\git-commit"
 	File /oname=README.txt "..\..\README.md"
 	File "..\..\README_HOTKEYS.txt"
 	File /oname=LICENSE.txt "..\..\LICENSE"
@@ -265,9 +278,9 @@ Section "$(SETUP_GAME)" SecMain
 	WriteRegStr HKLM "Software\${GAME_NAME}" "" $INSTDIR
 	
 	;Write the uninstall keys for Windows
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "DisplayName" "${GAME_NAME} ${GAME_VERSION}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "DisplayName" "${GAME_NAME} ${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "DisplayIcon" '"$INSTDIR\OpenApoc.exe",0'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "DisplayVersion" "${GAME_VERSION}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "DisplayVersion" "${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "InstallLocation" "$INSTDIR"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "Publisher" "${GAME_AUTHOR}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${GAME_NAME}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
@@ -471,10 +484,10 @@ SectionEnd
 ;--------------------------------
 ;Version Information
 
-	VIProductVersion "${GAME_VERSION_NUMERIC}.0.0"
+	VIProductVersion "${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}.0"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${GAME_NAME} Installer"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductVersion" "${GAME_VERSION_NUMERIC}.0.0"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductVersion" "${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}.0"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "${GAME_AUTHOR}"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright 2014-2019 ${GAME_AUTHOR}"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "${GAME_NAME} Installer"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${GAME_VERSION_NUMERIC}.0.0"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}.0"
