@@ -28,8 +28,18 @@
 ;--------------------------------
 ;General
 
+	!if GAME_VERSION_MAJOR == ''
+		!define GAME_VERSION_MAJOR 0
+	!endif
+	!if GAME_VERSION_MINOR == ''
+		!define GAME_VERSION_MINOR 0
+	!endif
+	!if GAME_VERSION_COMMIT == ''
+		!define GAME_VERSION_COMMIT 0
+	!endif
+
 	;Name and file
-	Name "${GAME_NAME} ${GAME_VERSION}"
+	Name "${GAME_NAME} ${GAME_VERSION_MAJOR}.${GAME_VERSION_MINOR}.${GAME_VERSION_COMMIT}"
 	OutFile "install-openapoc-${GAME_VERSION}.exe"
 
 	;Default installation folder
@@ -43,16 +53,6 @@
 
 	;Get major and minor version numbers from the git tag
 	!searchparse /ignorecase /noerrors ${GAME_VERSION} `v` GAME_VERSION_MAJOR `.` GAME_VERSION_MINOR `-` GAME_VERSION_COMMIT `-`
-
-	!if GAME_VERSION_MAJOR == ''
-		!define GAME_VERSION_MAJOR 0
-	!endif
-	!if GAME_VERSION_MINOR == ''
-		!define GAME_VERSION_MINOR 0
-	!endif
-	!if GAME_VERSION_COMMIT == ''
-		!define GAME_VERSION_COMMIT 0
-	!endif
 
 ;--------------------------------
 ;Variables
