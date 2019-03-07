@@ -19,12 +19,11 @@ Control::Control(bool takesFocus)
     : mouseInside(false), mouseDepressed(false), resolvedLocation(0, 0), Visible(true),
       Name("Control"), Location(0, 0), Size(0, 0), SelectionSize(0, 0),
       BackgroundColour(0, 0, 0, 0), takesFocus(takesFocus), showBounds(false), Enabled(true),
-      canCopy(true), funcPreRender(nullptr)
+      canCopy(true), funcPreRender(nullptr),
+      // Tooltip defaults
+      ToolTipBackground{128, 128, 128}, ToolTipBorders{{1, {0, 0, 0}}, {1, {255, 255, 255}}},
+      ToolTipPadding(1)
 {
-	// Tooltip defaults
-	ToolTipBackground = {128, 128, 128};
-	ToolTipBorders = {{1, {0, 0, 0}}, {1, {255, 255, 255}}};
-	ToolTipPadding = 1;
 }
 
 Control::~Control() { unloadResources(); }
