@@ -176,10 +176,6 @@ DataImpl::DataImpl(std::vector<UString> paths) : Data(paths)
 		else
 			LogWarning("Failed to load music loader %s", t);
 	}
-	for (int i = 0; i < imageCacheSize.get(); i++)
-		pinnedImages.push(nullptr);
-	for (int i = 0; i < imageSetCacheSize.get(); i++)
-		pinnedImageSets.push(nullptr);
 	for (int i = 0; i < voxelCacheSize.get(); i++)
 		pinnedLOFVoxels.push(nullptr);
 	for (int i = 0; i < fontStringCacheSize.get(); i++)
@@ -329,7 +325,8 @@ sp<ImageSet> DataImpl::loadImageSet(const UString &path)
 	}
 
 	this->pinnedImageSets.push(imgSet);
-	this->pinnedImageSets.pop();
+	if (this->pinnedImageSets.size() > imageSetCacheSize.get())
+		this->pinnedImageSets.pop();
 
 	this->imageSetCache[cacheKey] = imgSet;
 	imgSet->path = path;
@@ -661,7 +658,8 @@ sp<Image> DataImpl::loadImage(const UString &path, bool lazy)
 	}
 
 	this->pinnedImages.push(img);
-	this->pinnedImages.pop();
+	if (this->pinnedImages.size() > imageCacheSize.get())
+		this->pinnedImages.pop();
 
 	if (!lazy)
 	{
