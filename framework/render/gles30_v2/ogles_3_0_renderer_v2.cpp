@@ -694,6 +694,7 @@ class GLRGBTexture final : public RendererImageData
 	}
 	~GLRGBTexture() override
 	{
+		LogError("Attempting to delete texture ID: %d", this->tex_id);
 		if (gl->IsTexture(tex_id))
 		{
 			gl->DeleteTextures(1, &this->tex_id);
