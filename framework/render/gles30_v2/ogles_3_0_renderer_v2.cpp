@@ -678,7 +678,7 @@ class GLRGBTexture final : public RendererImageData
   public:
 	GL::GLuint tex_id;
 	Vec2<unsigned int> size;
-	GLRGBTexture(sp<RGBImage> i)
+	GLRGBTexture(sp<RGBImage> i) : tex_id(-1)
 	{
 		TRACE_FN;
 		RGBImageLock l(i);
@@ -692,7 +692,17 @@ class GLRGBTexture final : public RendererImageData
 		gl->TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_WRAP_S, GL::CLAMP_TO_EDGE);
 		gl->TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_WRAP_T, GL::CLAMP_TO_EDGE);
 	}
-	~GLRGBTexture() override { gl->DeleteTextures(1, &this->tex_id); }
+	~GLRGBTexture() override
+	{
+		if (gl->IsTexture(tex_id))
+		{
+			gl->DeleteTextures(1, &this->tex_id);
+		}
+		else
+		{
+			LogError("Trying to delete a non-texture? ID: %d", this->tex_id);
+		}
+	}
 };
 
 class GLPaletteTexture final : public RendererImageData
